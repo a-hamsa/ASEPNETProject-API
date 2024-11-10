@@ -1,0 +1,6 @@
+@ASEPNETProject.Api_HostAddress = http://localhost:5285
+
+GET {{ASEPNETProject.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
