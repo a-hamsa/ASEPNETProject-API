@@ -21,8 +21,4 @@
     <ProjectReference Include="..\ASEPNETProject.Data\ASEPNETProject.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

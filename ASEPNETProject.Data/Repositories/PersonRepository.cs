@@ -15,7 +15,7 @@ public class PersonRepository : IPersonRepository
         var people = await _ctx.People.ToListAsync();
         return people;
     }
-    public async Task<Person> GetPeopleAsync(int id)
+    public async Task<Person> GetPeopleByIdAsync(int id)
     {
         return await _ctx.People.FindAsync(id);
     }
