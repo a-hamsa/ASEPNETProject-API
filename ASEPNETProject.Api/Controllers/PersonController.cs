@@ -51,7 +51,7 @@ namespace ASEPNETProject.Api.Controllers
                 }
                 existingPerson.Name = personToUpdate.Name;
                 existingPerson.Email = personToUpdate.Email;
-                await _personRepo.CreatePersonAsync(existingPerson);
+                await _personRepo.UpdatePersonAsync(existingPerson);
                 return NoContent();
             }
             catch (Exception ex)
