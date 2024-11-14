@@ -4,25 +4,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ASEPNETProject.Api.Controllers
 {
-    [Route("api/people")]
+    [Route("api/article")]
     [ApiController]
-    public class PersonController : ControllerBase
+    public class ArticleController : Controller
     {
-        private readonly IPersonRepository _personRepo;
-        private readonly ILogger<PersonController> _logger;
-        public PersonController(IPersonRepository personRepo, ILogger<PersonController> logger)
+        private readonly IArticleRepository _articleRepository;
+        private readonly ILogger<ArticleController> _logger;
+
+        public ArticleController(IArticleRepository articleRepository, ILogger<ArticleController> logger)
         {
-            _personRepo = personRepo;
+            _articleRepository = articleRepository;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPerson(Person person)
+        public async Task<IActionResult> AddArticle(Article article)
         {
             try
             {
-                var createdPerson = await _personRepo.CreatePersonAsync(person);
-                return CreatedAtAction(nameof(AddPerson), createdPerson);
+                var createdArticle = await _articleRepository.CreateArticleAsync(article);
+                createdArticle.Date = DateTime.Now;
+                return CreatedAtAction(nameof(AddArticle), createdArticle);
             }
             catch (Exception ex)
             {
@@ -30,27 +32,31 @@ namespace ASEPNETProject.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     StatusCode = 500,
-                    message = ex.Message
+                    Message = ex.Message
                 });
             }
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePerson(Person personToUpdate)
+        public async Task<IActionResult> UpdateArticle(Article articleUpdate)
         {
             try
             {
-                var existingPerson = await _personRepo.GetPeopleByIdAsync(personToUpdate.Id);
-                if (existingPerson == null)
+                var existingArticle = await _articleRepository.GetArticleByIdAsync(articleUpdate.Id);
+                if (existingArticle == null)
                 {
-                    return NotFound(new {
-                        StatusCode=404,
-                            message="Record Not Found"
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
                     });
                 }
-                existingPerson.Name = personToUpdate.Name;
-                existingPerson.Email = personToUpdate.Email;
-                await _personRepo.UpdatePersonAsync(existingPerson);
+                existingArticle.AuthorId = articleUpdate.AuthorId;
+                existingArticle.Title = articleUpdate.Title;
+                existingArticle.Body = articleUpdate.Body;
+                existingArticle.Author = articleUpdate.Author;
+                existingArticle.Date = DateTime.Now;
+                await _articleRepository.UpdateArticleAsync(existingArticle);
                 return NoContent();
             }
             catch (Exception ex)
@@ -65,12 +71,12 @@ namespace ASEPNETProject.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerson(int id)
+        public async Task<IActionResult> DeleteArticle(int id)
         {
             try
             {
-                var existingPerson = await _personRepo.GetPeopleByIdAsync(id);
-                if (existingPerson == null)
+                var existingArticle = await _articleRepository.GetArticleByIdAsync(id);
+                if (existingArticle == null)
                 {
                     return NotFound(new
                     {
@@ -78,7 +84,7 @@ namespace ASEPNETProject.Api.Controllers
                         message = "Record Not Found"
                     });
                 }
-                await _personRepo.DeletePersonAsync(existingPerson);
+                await _articleRepository.DeleteArticleAsync(existingArticle);
                 return NoContent();
             }
             catch (Exception ex)
@@ -92,13 +98,21 @@ namespace ASEPNETProject.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPeople()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetArticle(int id)
         {
             try
             {
-                var people = await _personRepo.GetPeopleAsync();
-                return Ok(people);
+                var article = await _articleRepository.GetArticleByIdAsync(id);
+                if (article == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record Not Found"
+                    });
+                }
+                return Ok(article);
             }
             catch (Exception ex)
             {
@@ -110,22 +124,13 @@ namespace ASEPNETProject.Api.Controllers
                 });
             }
         }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPeopple(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetArticle()
         {
             try
             {
-                var person = await _personRepo.GetPeopleByIdAsync(id);
-                if (person == null)
-                {
-                    return NotFound(new
-                    {
-                        StatusCode = 404,
-                        message = "Record Not Found"
-                    });
-                }
-                return Ok(person);
+                var article = await _articleRepository.GetArticlesAsync();
+                return Ok(article);
             }
             catch (Exception ex)
             {
