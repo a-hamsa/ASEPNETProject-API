@@ -16,6 +16,6 @@ public class PersonContext : DbContext
     public DbSet<Person> People { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseMySQL(_connectionString);
+        optionsBuilder.UseSqlServer(_connectionString);
     }
 }
